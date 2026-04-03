@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>MindFlow Studio — TikTok Login</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0f0f0f;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    .card {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 16px;
+      padding: 40px;
+      max-width: 480px;
+      width: 90%;
+      text-align: center;
+    }
+    .logo { font-size: 2rem; margin-bottom: 8px; }
+    h1 { font-size: 1.2rem; color: #aaa; margin-bottom: 32px; }
+    .status { font-size: 1rem; margin-bottom: 16px; }
+    .code-box {
+      background: #0f0f0f;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 16px;
+      word-break: break-all;
+      font-family: monospace;
+      font-size: 0.85rem;
+      color: #69e86e;
+      margin-bottom: 24px;
+      text-align: left;
+    }
+    .copy-btn {
+      background: #fe2c55;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 28px;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-bottom: 8px;
+      transition: opacity 0.2s;
+    }
+    .copy-btn:hover { opacity: 0.85; }
+    .copy-btn:active { opacity: 0.7; }
+    .instructions {
+      background: #111;
+      border-left: 3px solid #fe2c55;
+      border-radius: 4px;
+      padding: 16px;
+      text-align: left;
+      font-size: 0.85rem;
+      color: #aaa;
+      margin-top: 24px;
+      line-height: 1.7;
+    }
+    .instructions strong { color: #fff; }
+    .error { color: #ff6b6b; }
+    #copied-msg { color: #69e86e; font-size: 0.85rem; min-height: 20px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">⚡</div>
+    <h1>MindFlow Studio — TikTok Auth</h1>
+
+    <div id="content"></div>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get('code');
+    const state = params.get('state');
+    const error = params.get('error');
+    const el = document.getElementById('content');
+
+    if (error) {
+      el.innerHTML = `
+        <p class="status error">❌ TikTok error: <strong>${error}</strong></p>
+        <p style="color:#888;font-size:0.85rem">Go back to TikTok Developer and try again.</p>
+      `;
+    } else if (code) {
+      el.innerHTML = `
+        <p class="status">✅ Authorization received!</p>
+        <p style="color:#888;font-size:0.85rem;margin-bottom:12px">Copy this code into n8n:</p>
+        <div class="code-box" id="code-display">${code}</div>
+        <button class="copy-btn" onclick="copyCode()">📋 Copy code</button>
+        <div id="copied-msg"></div>
+        ${state ? `<p style="color:#555;font-size:0.75rem;margin-top:8px">State: ${state}</p>` : ''}
+        <div class="instructions">
+          <strong>Next steps in n8n:</strong><br>
+          1. Open the <strong>HTTP Request TikTok Token</strong> node<br>
+          2. Paste this code in the <code>code</code> field<br>
+          3. Run the node to get the <strong>access_token</strong><br>
+          4. Store the token in your n8n credentials
+        </div>
+      `;
+    } else {
+      el.innerHTML = `
+        <p class="status" style="color:#888;">Waiting for TikTok response...</p>
+        <p style="color:#555;font-size:0.85rem;margin-top:8px">
+          This page automatically receives the OAuth code after authorization.
+        </p>
+      `;
+    }
+
+    function copyCode() {
+      const code = document.getElementById('code-display').innerText;
+      navigator.clipboard.writeText(code).then(() => {
+        document.getElementById('copied-msg').innerText = '✅ Copied to clipboard!';
+        setTimeout(() => {
+          document.getElementById('copied-msg').innerText = '';
+        }, 3000);
+      });
+    }
+  </script>
+</body>
+</html>
